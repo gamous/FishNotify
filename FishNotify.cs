@@ -26,7 +26,8 @@ namespace FishNotify
 
         [PluginService]
         private GameNetwork Network { get; set; } = null!;
-
+        [PluginService]
+        private DataManager DataManager { get; set; } = null!;
         [PluginService]
         public static ChatGui Chat { get; set; } = null!;
 
@@ -56,6 +57,12 @@ namespace FishNotify
             PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;
         }
 
+        private bool IsCN()
+        {
+            var lang = DataManager.Language;
+            return (uint)lang == 4 || lang.ToString() == "ChineseSimplified";
+        }
+
         private void ExtractOpCode(Task<string> task)
         {
             try
@@ -67,10 +74,10 @@ namespace FishNotify
                     return;
                 }
 
-                var region = regions.Find(r => r.Region == "Global");
+                var region = regions.Find(r => r.Region == (IsCN()? "CN": "Global"));
                 if (region == null || region.Lists == null)
                 {
-                    PluginLog.Warning("No global region found in opcode list");
+                    PluginLog.Warning($"No global region found in opcode list");
                     return;
                 }
 
